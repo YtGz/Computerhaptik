@@ -14,6 +14,7 @@ byte current = 0;
 void setup() {
   // put your setup code here, to run once:
   Wire.begin(); // join i2c bus (address optional for master)
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -25,7 +26,7 @@ void loop() {
   }
   float_and_bytes.f = (float) sin(current*twoPi/sampleRate);
   
-  Serial.print("Original sample: ")
+  Serial.print("Original sample: ");
   Serial.println(float_and_bytes.f);
   Wire.beginTransmission(8); // transmit to device #8
   int i;

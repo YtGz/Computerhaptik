@@ -21,12 +21,13 @@ void loop() {
 
 // function that executes whenever data is received from master
 // this function is registered as an event, see setup()
-void receiveEvent() {
+void receiveEvent(int arg) {
   int i;
   for(i = 0; i < 4; i++) {
     float_and_bytes.bytes[i] = Wire.read(); // receive a byte
   }
-  float_and_bytes.f *= -1; //reverse the received data
+  Serial.println(float_and_bytes.f);
+  //float_and_bytes.f *= -1; //reverse the received data
   for(i = 0; i < 4; i++) { 
     Wire.write(float_and_bytes.bytes[i]);              // sends one byte
   }
