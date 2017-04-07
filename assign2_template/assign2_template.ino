@@ -1,9 +1,18 @@
-#include <math.h>
+*#include <math.h>
 
 #define SIZE 5
 /*
     DECLARATION
 */
+#define typedef enum {
+  SPRING= 0,
+  FRICTION,
+  VIRTUAL_WALL ,
+  HARD_SURFACE,
+  TEXTURES
+} task;
+task currentTask = HARD_SURFACE;
+
 
 // Pin
 int pwmPin = 5; // PWM output pin for motor
@@ -123,13 +132,47 @@ void calPosMeter()
 */
 void forceRendering()
 {
-  // Spring
-  double kSpring = 0.03;
-  force = -kSpring * xh;
+switch (currentTask) {
+
+    case SPRING:
+      double kSpring = 0.03;
+      force = -kSpring * xh;
 
 //  Serial.print(xh);
 //  Serial.print(' ');
-//  Serial.println(force);
+//  Serial.println(force);      break;
+
+    case FRICTION:
+    
+      force = -vh * k_friction;
+      break;
+      
+    case VIRTUAL_WALL:
+      static double x_wall = 10.0;
+      double kSpring = 0.03;
+      if (xh < x_wall) {
+        force = 0;
+      } else {
+        force = -kSpring * abs(x_wall - xh);
+      }
+      break;
+      
+    case HARD_SURFACE:
+
+      break;
+
+    case TEXTURES:
+
+      break;
+  }
+
+}
+  
+
+
+
+
+
 }
 
 
