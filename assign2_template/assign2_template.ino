@@ -41,6 +41,7 @@ double Tp = 0;              // torque of the motor pulley
 double duty = 0;            // duty cylce (between 0 and 255)
 unsigned int output = 0;    // output command to the motor
 
+double omega = 0.85; // for IIR filtering, usually between 0.8 and 0.9
 int sampleTime = 50; // 50ms.. dt.. -> 20Hz
 
 /*
@@ -116,7 +117,9 @@ void calPosMeter()
   ts *= -1.;
   xh_prev = xh;
   xh = rh * (ts * 3.14159 / 180); // Compute the position of the handle based on ts
-  vh = (xh - xh_prev) / .0001;
+  v_raw = (xh - xh_prev) / .05;
+  // use infinite impulse response filter for smoothing
+  vh = (1 - omega) * v_raw + omega * vh;
 }
 /*
     forceRendering()
@@ -124,12 +127,20 @@ void calPosMeter()
 void forceRendering()
 {
   // Spring
-  double kSpring = 0.03;
-  force = -kSpring * xh;
+//  double kSpring = 0.03; // spring constant
+//  force = -kSpring * xh;
 
-//  Serial.print(xh);
-//  Serial.print(' ');
-//  Serial.println(force);
+  // Coulomb - Friction
+  //double bCoulomb = .7; // damping factor
+  //force = -bCoulomb * ((vh > 0) - (vh < 0));
+
+  // Viscous Friction
+  double bViscous = 0.03; // damping factor
+  force = -bViscous * vh;
+
+  //Serial.print(vh);
+  //Serial.print(' ');
+  //Serial.println(force);
 }
 
 
@@ -207,6 +218,6 @@ void loop() {
   // output to motor
   motorControl();
   // delay before next reading:
-  while(millis()-start < sampleTime){
+  while (millis() - start < sampleTime) {
   }
 }
