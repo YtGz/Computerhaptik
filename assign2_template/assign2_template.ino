@@ -1,9 +1,19 @@
-#include <math.h>
+*#include <math.h>
 
 #define SIZE 5
 /*
     DECLARATION
 */
+#define typedef enum {
+  SPRING= 0,
+  COULOMB_FRICTION,
+
+  VIRTUAL_WALL ,
+  HARD_SURFACE,
+  TEXTURES
+} task;
+task currentTask = HARD_SURFACE;
+
 
 // Pin
 int pwmPin = 5; // PWM output pin for motor
@@ -126,21 +136,47 @@ void calPosMeter()
 */
 void forceRendering()
 {
-  // Spring
-//  double kSpring = 0.03; // spring constant
-//  force = -kSpring * xh;
+switch (currentTask) {
 
-  // Coulomb - Friction
-  //double bCoulomb = .7; // damping factor
-  //force = -bCoulomb * ((vh > 0) - (vh < 0));
+    case SPRING:
+      double kSpring = 0.03;
+      force = -kSpring * xh;
+      break;
 
-  // Viscous Friction
-  double bViscous = 0.03; // damping factor
-  force = -bViscous * vh;
+//  Serial.print(xh);
+//  Serial.print(' ');
+//  Serial.println(force);
 
-  //Serial.print(vh);
-  //Serial.print(' ');
-  //Serial.println(force);
+    case COULOMB_FRICTION:
+      double bCoulomb = .7; // damping factor
+      force = -bCoulomb * ((vh > 0) - (vh < 0));
+      break;
+
+    case VISCOUS_FRICTION:
+      double bViscous = 0.03; // damping factor
+      force = -bViscous * vh;
+      break;
+
+    case VIRTUAL_WALL:
+      static double x_wall = 10.0;
+      double kSpring = 0.03;
+      if (xh < x_wall) {
+        force = 0;
+      } else {
+        force = -kSpring * abs(x_wall - xh);
+      }
+      break;
+
+    case HARD_SURFACE:
+
+      break;
+
+    case TEXTURES:
+
+      break;
+  }
+
+}
 }
 
 
