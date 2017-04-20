@@ -17,7 +17,7 @@ typedef enum {
   HARD_SURFACE,
   TEXTURES
 } task;
-task currentTask = TEXTURES;
+task currentTask = HARD_SURFACE;
 
 // Kinematics
 double xh = 0;         // position of the handle [cm]
@@ -26,9 +26,13 @@ double vh = 0;         //velocity of the handle
 
 // Force output variables
 double force = 0;           // force at the handle
+double sinForce = 0;        // for exercise 4
+double springForce = 0;     // for exercise 4
 
 double v_raw = 0;
 double omega = 0.85; // for IIR filtering, usually between 0.8 and 0.9
+
+int noCollision = 1; // used to mark if paddle is inside colliding object or not (used in ex. 4 [hard surface])
 
 void updatePos(double newPos)
 {
@@ -78,9 +82,31 @@ switch (currentTask) {
       break;
     }
 
-    case HARD_SURFACE:
-      //TODO
+    case HARD_SURFACE: {
+      static double x_wall = 1.0;
+      double kSpring = 0.03;
+
+      // parameters of decaying sinusoid
+      double amplitude = 0.2;
+      double decayingRate = 2;
+      double frequency = 36;
+
+      double timeOfImpact;
+      if (xh < x_wall) {
+        force = 0;
+        noCollision = 1;
+      } else {
+        if(noCollision) {
+          timeOfImpact = abs(xh)/*millis() //abs(xh) here is just for testing*/;
+          noCollision = 0;
+        }
+        double t = abs(xh)/*millis() //abs(xh) here is just for testing*/ - timeOfImpact;
+        sinForce = amplitude * exp(-decayingRate*t) * sin(2 * M_PI * frequency * t);
+        springForce = -kSpring * abs(x_wall - xh);
+        force = sinForce + springForce;
+      }
       break;
+    }
 
     case TEXTURES: {
       double bViscous = 0.03; // damping factor
@@ -104,6 +130,7 @@ switch (currentTask) {
 
 }
 
+// loop simulates handle movement (assumption: xh is in cm)
 int main() {
   double i;
   for(i = 0; i > -8; i -= 0.1) {
@@ -112,6 +139,8 @@ int main() {
     //printf("xh: %.2f    f: %.3f\n", xh, force);
     if(currentTask == COULOMB_FRICTION || currentTask == VISCOUS_FRICTION)
       printf("%.2f %.3f %.3f\n", xh, vh, force);
+    else if(currentTask == HARD_SURFACE)
+      printf("%.2f %.3f %.3f %.3f\n", xh, springForce, sinForce, force);
     else
       printf("%.2f %.3f\n", xh, force);
   }
@@ -121,6 +150,8 @@ int main() {
     //printf("xh: %.2f    f: %.3f\n", xh, force);
     if(currentTask == COULOMB_FRICTION || currentTask == VISCOUS_FRICTION)
       printf("%.2f %.3f %.3f\n", xh, vh, force);
+    else if(currentTask == HARD_SURFACE)
+      printf("%.2f %.3f %.3f %.3f\n", xh, springForce, sinForce, force);
     else
       printf("%.2f %.3f\n", xh, force);
   }
@@ -130,6 +161,8 @@ int main() {
     //printf("xh: %.2f    f: %.3f\n", xh, force);
     if(currentTask == COULOMB_FRICTION || currentTask == VISCOUS_FRICTION)
       printf("%.2f %.3f %.3f\n", xh, vh, force);
+    else if(currentTask == HARD_SURFACE)
+      printf("%.2f %.3f %.3f %.3f\n", xh, springForce, sinForce, force);
     else
       printf("%.2f %.3f\n", xh, force);
   }
