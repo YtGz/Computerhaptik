@@ -1,3 +1,6 @@
+// program to test implementation of assignment 2 without a haptic paddle
+
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +17,7 @@ typedef enum {
   HARD_SURFACE,
   TEXTURES
 } task;
-task currentTask = SPRING;
+task currentTask = VIRTUAL_WALL;
 
 // Kinematics
 double xh = 0;         // position of the handle [m]
@@ -47,7 +50,7 @@ void forceRendering()
 switch (currentTask) {
 
     case SPRING: {
-      double kSpring = 0.03;
+      double kSpring = 1.3;
       force = -kSpring * xh;
       break;
     }
@@ -65,7 +68,7 @@ switch (currentTask) {
     }
 
     case VIRTUAL_WALL: {
-      static double x_wall = 10.0;
+      static double x_wall = 1.0;
       double kSpring = 0.03;
       if (xh < x_wall) {
         force = 0;
@@ -91,16 +94,28 @@ int main() {
   for(i = 0; i > -8; i -= 0.1) {
     updatePos(i);
     forceRendering();
-    printf("xh: %.2f    f: %.3f\n", xh, force);
+    //printf("xh: %.2f    f: %.3f\n", xh, force);
+    if(currentTask == COULOMB_FRICTION || currentTask == VISCOUS_FRICTION)
+      printf("%.2f %.3f %.3f\n", xh, vh, force);
+    else
+      printf("%.2f %.3f\n", xh, force);
   }
   for(i += 0.2; i < 8; i += 0.1) {
     updatePos(i);
     forceRendering();
-    printf("xh: %.2f    f: %.3f\n", xh, force);
+    //printf("xh: %.2f    f: %.3f\n", xh, force);
+    if(currentTask == COULOMB_FRICTION || currentTask == VISCOUS_FRICTION)
+      printf("%.2f %.3f %.3f\n", xh, vh, force);
+    else
+      printf("%.2f %.3f\n", xh, force);
   }
   for(i -= 0.2; i > 0; i -= 0.1) {
     updatePos(i);
     forceRendering();
-    printf("xh: %.2f    f: %.3f\n", xh, force);
+    //printf("xh: %.2f    f: %.3f\n", xh, force);
+    if(currentTask == COULOMB_FRICTION || currentTask == VISCOUS_FRICTION)
+      printf("%.2f %.3f %.3f\n", xh, vh, force);
+    else
+      printf("%.2f %.3f\n", xh, force);
   }
 }
