@@ -17,10 +17,10 @@ typedef enum {
   HARD_SURFACE,
   TEXTURES
 } task;
-task currentTask = VIRTUAL_WALL;
+task currentTask = TEXTURES;
 
 // Kinematics
-double xh = 0;         // position of the handle [m]
+double xh = 0;         // position of the handle [cm]
 double xh_prev = 0;
 double vh = 0;         //velocity of the handle
 
@@ -82,9 +82,24 @@ switch (currentTask) {
       //TODO
       break;
 
-    case TEXTURES:
-      //TODO
+    case TEXTURES: {
+      double bViscous = 0.03; // damping factor
+      // max damping range width: 2.5mm (ie. continous damping)
+      double bWidth = 0.12; //width of damped element
+      double uWidth = (1.5 - bWidth*6) / 5.0; //width of undamped spacing
+      if((xh > uWidth/2 && xh <= uWidth/2 + bWidth) ||
+         (xh > uWidth/2 + uWidth + bWidth && xh <= uWidth/2 + uWidth + 2*bWidth) ||
+         (xh > uWidth/2 + 2*uWidth + 2*bWidth && xh <= uWidth/2 + 2*uWidth + 3*bWidth) ||
+         (xh < -uWidth/2 && xh >= -(uWidth/2 + bWidth)) ||
+         (xh < -(uWidth/2 + uWidth + bWidth) && xh >= -(uWidth/2 + uWidth + 2*bWidth)) ||
+         (xh < -(uWidth/2 + 2*uWidth + 2*bWidth) && xh >= -(uWidth/2 + 2*uWidth + 3*bWidth))
+      ) {
+        force = -bViscous * vh; // if we are on a damped texture part, we apply viscous friction
+      } else {
+        force = 0;
+      }
       break;
+    }
   }
 
 }
