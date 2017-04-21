@@ -33,6 +33,7 @@ double v_raw = 0;
 double omega = 0.85; // for IIR filtering, usually between 0.8 and 0.9
 
 int noCollision = 1; // used to mark if paddle is inside colliding object or not (used in ex. 4 [hard surface])
+double timeOfImpact; // used in exercise 4
 
 void updatePos(double newPos)
 {
@@ -89,18 +90,17 @@ switch (currentTask) {
       // parameters of decaying sinusoid
       double amplitude = 0.2;
       double decayingRate = 2;
-      double frequency = 36;
+      double frequency = 24;
 
-      double timeOfImpact;
       if (xh < x_wall) {
         force = 0;
         noCollision = 1;
       } else {
         if(noCollision) {
-          timeOfImpact = abs(xh)/*millis() //abs(xh) here is just for testing*/;
+          timeOfImpact = xh < 0? -xh : xh/*millis() //abs(xh) here is just for testing*/;
           noCollision = 0;
         }
-        double t = abs(xh)/*millis() //abs(xh) here is just for testing*/ - timeOfImpact;
+        double t = (xh < 0? -xh : xh)/*millis() //abs(xh) here is just for testing*/ - timeOfImpact;
         sinForce = amplitude * exp(-decayingRate*t) * sin(2 * M_PI * frequency * t);
         springForce = -kSpring * abs(x_wall - xh);
         force = sinForce + springForce;
