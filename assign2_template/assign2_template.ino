@@ -12,7 +12,7 @@ typedef enum {
   HARD_SURFACE,
   TEXTURES
 } task;
-task currentTask = HARD_SURFACE;
+task currentTask = VIRTUAL_WALL;
 
 
 // Pin
@@ -124,7 +124,7 @@ void forceRendering()
 switch (currentTask) {
 
     case SPRING: {
-      double kSpring = 1.3;
+      double kSpring = 0.03;
       force = -kSpring * xh;
       break;
     }
@@ -142,8 +142,8 @@ switch (currentTask) {
     }
 
     case VIRTUAL_WALL: {
-      static double x_wall = 1.0;
-      double kSpring = 0.03;
+      static double x_wall = 1;
+      double kSpring = 0.3;
       if (xh < x_wall) {
         force = 0;
       } else {
@@ -153,13 +153,13 @@ switch (currentTask) {
     }
 
     case HARD_SURFACE: {
-      static double x_wall = 1.0;
-      double kSpring = 0.03;
+      static double x_wall = 1;
+      double kSpring = 0.8;
 
       // parameters of decaying sinusoid
-      double amplitude = 0.2;
+      double amplitude = 2.4;
       double decayingRate = 2;
-      double frequency = 24;
+      double frequency = 242;
 
       if (xh < x_wall) {
         force = 0;
@@ -178,10 +178,10 @@ switch (currentTask) {
     }
 
     case TEXTURES: {
-      double bViscous = 0.03; // damping factor
+      double bViscous = 0.7; // damping factor
       // max damping range width: 2.5mm (ie. continous damping)
-      double bWidth = 0.12; //width of damped element
-      double uWidth = (1.5 - bWidth*6) / 5.0; //width of undamped spacing
+      double bWidth = 1.2; //width of damped element
+      double uWidth = (15 - bWidth*6) / 5.0; //width of undamped spacing
       if((xh > uWidth/2 && xh <= uWidth/2 + bWidth) ||
          (xh > uWidth/2 + uWidth + bWidth && xh <= uWidth/2 + uWidth + 2*bWidth) ||
          (xh > uWidth/2 + 2*uWidth + 2*bWidth && xh <= uWidth/2 + 2*uWidth + 3*bWidth) ||
@@ -300,17 +300,23 @@ void loop() {
   // log data
   if(currentTask == COULOMB_FRICTION || currentTask == VISCOUS_FRICTION) {
     Serial.print(xh);
+    Serial.print(" ");
     Serial.print(vh, 4);
+    Serial.print(" ");
     Serial.println(force, 4);
   }
   else if(currentTask == HARD_SURFACE) {
     Serial.print(xh);
+    Serial.print(" ");
     Serial.print(springForce, 4);
+    Serial.print(" ");
     Serial.print(sinForce, 4);
+    Serial.print(" ");
     Serial.println(force, 4);
   }
   else {
     Serial.print(xh);
+    Serial.print(" ");
     Serial.println(force, 4);
   }
   // output to motor
