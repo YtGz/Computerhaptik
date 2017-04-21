@@ -97,10 +97,10 @@ switch (currentTask) {
         noCollision = 1;
       } else {
         if(noCollision) {
-          timeOfImpact = xh < 0? -xh : xh/*millis() //abs(xh) here is just for testing*/;
+          timeOfImpact = xh < 0? -xh : xh/*millis() //(xh < 0? -xh : xh) here is just for testing*/;
           noCollision = 0;
         }
-        double t = (xh < 0? -xh : xh)/*millis() //abs(xh) here is just for testing*/ - timeOfImpact;
+        double t = (xh < 0? -xh : xh)/*millis() //(xh < 0? -xh : xh) here is just for testing*/ - timeOfImpact;
         sinForce = amplitude * exp(-decayingRate*t) * sin(2 * M_PI * frequency * t);
         springForce = -kSpring * abs(x_wall - xh);
         force = sinForce + springForce;
