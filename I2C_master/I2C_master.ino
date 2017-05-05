@@ -14,7 +14,7 @@ byte current = 0;
 void setup() {
   // put your setup code here, to run once:
   Wire.begin(); // join i2c bus (address optional for master)
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop() {
@@ -34,16 +34,20 @@ void loop() {
     Wire.write(float_and_bytes.bytes[i]);              // sends one byte
   }
   Wire.endTransmission();    // stop transmitting
-  delay(500);
+  delay(10);
 
+  Wire.beginTransmission(8);
   Wire.requestFrom(8, 4);    // request 4 bytes from slave device #8
   i = 0;
-  while (Wire.available()) { // slave may send less than requested
+  while( Wire.available() ) { // slave may send less than requested
     float_and_bytes.bytes[i] = Wire.read(); // receive a byte
+    //Serial.println(float_and_bytes.bytes[i]);
     i++;
   }
+  Wire.endTransmission();
+  
   Serial.print("Reversed sample: ");
   Serial.println(float_and_bytes.f);
   Serial.println();
-  delay(500);
+  delay(10);
 }

@@ -12,7 +12,7 @@ typedef enum {
   HARD_SURFACE,
   TEXTURES
 } task;
-task currentTask = VIRTUAL_WALL;
+task currentTask = HARD_SURFACE;
 
 
 // Pin
@@ -130,20 +130,20 @@ switch (currentTask) {
     }
 
     case COULOMB_FRICTION: {
-      double bCoulomb = .7; // damping factor
+      double bCoulomb = .1; // damping factor
       force = -bCoulomb * ((vh > 0) - (vh < 0));
       break;
     }
 
     case VISCOUS_FRICTION: {
-      double bViscous = 0.03; // damping factor
+      double bViscous = 0.09; // damping factor
       force = -bViscous * vh;
       break;
     }
 
     case VIRTUAL_WALL: {
       static double x_wall = 1;
-      double kSpring = 0.3;
+      double kSpring = 3;
       if (xh < x_wall) {
         force = 0;
       } else {
@@ -157,9 +157,9 @@ switch (currentTask) {
       double kSpring = 0.8;
 
       // parameters of decaying sinusoid
-      double amplitude = 2.4;
-      double decayingRate = 2;
-      double frequency = 242;
+      double amplitude = 0.4 *vh;
+      double decayingRate = 0.5;
+      double frequency = 24;
 
       if (xh < x_wall) {
         force = 0;
@@ -173,6 +173,9 @@ switch (currentTask) {
         sinForce = amplitude * exp(-decayingRate*t) * sin(2 * M_PI * frequency * t);
         springForce = -kSpring * abs(x_wall - xh);
         force = sinForce + springForce;
+        if(force > 0) {
+          force = 0;
+        }
       }
       break;
     }
