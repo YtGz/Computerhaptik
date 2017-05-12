@@ -26,17 +26,16 @@ void loop() {
   }
   float_and_bytes.f = (float) sin(current*twoPi/sampleRate);
   
-  Serial.print("Original sample: ");
-  Serial.println(float_and_bytes.f);
+  //Serial.print("Original sample: ");
+  Serial.print(float_and_bytes.f);
+  Serial.print(" ");
   Wire.beginTransmission(8); // transmit to device #8
   int i;
   for(i = 0; i < 4; i++) { 
     Wire.write(float_and_bytes.bytes[i]);              // sends one byte
   }
   Wire.endTransmission();    // stop transmitting
-  delay(10);
 
-  Wire.beginTransmission(8);
   Wire.requestFrom(8, 4);    // request 4 bytes from slave device #8
   i = 0;
   while( Wire.available() ) { // slave may send less than requested
@@ -44,10 +43,8 @@ void loop() {
     //Serial.println(float_and_bytes.bytes[i]);
     i++;
   }
-  Wire.endTransmission();
   
-  Serial.print("Reversed sample: ");
+  //Serial.print("Reversed sample: ");
   Serial.println(float_and_bytes.f);
-  Serial.println();
   delay(10);
 }

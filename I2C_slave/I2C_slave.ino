@@ -27,18 +27,12 @@ void receiveEvent(int arg) {
   for(i = 0; i < 4; i++) {
     float_and_bytes.bytes[i] = Wire.read(); // receive a byte
   }
-  //Serial.println(float_and_bytes.f);
-  //float_and_bytes.f *= -1; //reverse the received data
-  for(i = 0; i < 4; i++) { 
-    //Serial.println(float_and_bytes.bytes[i]);
-    Wire.write(float_and_bytes.bytes[i]);              // sends one byte
-  }
 }
 
-void requestEvent(int arg) {
+void requestEvent() {
   int i;
   Serial.println(float_and_bytes.f);
-  //float_and_bytes.f *= -1; //reverse the received data
+  float_and_bytes.f *= -1; //reverse the received data
   Wire.write(float_and_bytes.bytes, 4);              // sends one byte
 }
 
