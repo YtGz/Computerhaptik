@@ -22,14 +22,14 @@ float_b master_pos;
 float_b output_buffer;
 
 //PID from library
-float kp = 0.5;
-float ki = .0;
+float kp = 0.15;
+float ki = .00004;
 float kd = .0;
 double inputPID = .0;
 double outputPID = .0;
 double setPointPID = .0;
-double minLimit = -0.05;
-double maxLimit = 0.05;
+double minLimit = -1.9;
+double maxLimit = 1.9;
 //Specify the links and initial tuning parameters
 PID myPID(&inputPID, &outputPID, &setPointPID, kp, ki, kd, DIRECT);
 
@@ -99,6 +99,8 @@ void receiveEvent(int arg) {
   setPointPID = (double)master_pos.f;
   myPID.Compute();
   force = outputPID;
+
+  Serial.println(setPointPID);
 
   //set buffer appropriately for the feedback to master
   switch (currentTask) {

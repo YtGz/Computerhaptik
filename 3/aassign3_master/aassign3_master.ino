@@ -10,7 +10,8 @@ typedef enum {
   POS_FOR = 0,
   POS_POS
 } task;
-task currentTask = POS_FOR;
+task currentTask = POS_FOR
+;
 
 // we use an union to transmit the float value as an array of 4 bytes
 union float_b {
@@ -24,14 +25,14 @@ float slave_xh = 0;
 
 //PID from library
 // Setup vars
-float kp = 0.05;
-float ki = .0;
+float kp = 0.15;
+float ki = .00004;
 float kd = .0;
 double inputPID = .0;
 double outputPID = .0;
 double setPointPID = .0;
-double minLimit = -0.05;
-double maxLimit = 0.05;
+double minLimit = -1.9;
+double maxLimit = 1.9;
 //Specify the links and initial tuning parameters
 PID myPID(&inputPID, &outputPID, &setPointPID, kp, ki, kd, DIRECT);
 
@@ -161,12 +162,11 @@ void communicateWithSlave()
   }
   Wire.endTransmission(); // stop transmitting
 
-
   // request feedback from slave for force feedback
+  i = 0;
   Wire.requestFrom(8, 4);    // request 4 bytes from slave device #8
   while( Wire.available() ) { // slave may send less than requested
     input_buffer.bytes[i] = Wire.read(); // receive a byte
-    //Serial.println(float_and_bytes.bytes[i]);
     i++;
   }
   
@@ -291,7 +291,9 @@ void loop() {
   calPosMeter();
   // establish communication, calculate rendering force
   communicateWithSlave();
-  
+
+  Serial.println(force);
+
   // output to motor
   motorControl();
   // wait till sample period over, 10Hz
