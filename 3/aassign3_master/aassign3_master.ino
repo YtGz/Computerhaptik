@@ -163,14 +163,12 @@ void communicateWithSlave()
 
 
   // request feedback from slave for force feedback
-  Wire.beginTransmission(8);
   Wire.requestFrom(8, 4);    // request 4 bytes from slave device #8
   while( Wire.available() ) { // slave may send less than requested
     input_buffer.bytes[i] = Wire.read(); // receive a byte
     //Serial.println(float_and_bytes.bytes[i]);
     i++;
   }
-  Wire.endTransmission();
   
   switch (currentTask) {
 
