@@ -10,7 +10,7 @@ typedef enum {
   POS_FOR = 0,
   POS_POS
 } task;
-task currentTask = POS_FOR;
+task currentTask = POS_POS;
 
 // we use an union to transmit the float value as an array of 4 bytes
 union float_b{
@@ -100,8 +100,6 @@ void receiveEvent(int arg) {
   myPID.Compute();
   force = outputPID;
 
-  Serial.println(setPointPID);
-
   //set buffer appropriately for the feedback to master
   switch (currentTask) {
 
@@ -123,6 +121,9 @@ void receiveEvent(int arg) {
 
 //request event handler, data transmitter
 void requestEvent() {
+  Serial.print(xh);
+  Serial.print(" ");
+  Serial.println(force);
   Wire.write(output_buffer.bytes, 4);              // sends 4 bytes
 }
 
